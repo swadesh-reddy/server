@@ -12,7 +12,8 @@ exports.getAllCategories = async (req, res, next) => {
 }
 
 exports.getCategoryById = async (req, res, next)=>{
-    await categoryservices.getCategoryById(req).then(data => {
+    console.log(req.body)
+    await categoryservices.getCategoryById(req.body).then(data => {
         res.send(data);
     }).catch(err => {
         res.status(500).json({

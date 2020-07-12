@@ -17,7 +17,7 @@ const myFile = fs.readFileSync(file)
   return await  mybucket.uploadFile(fileMetaData).then((data)=>{
         console.log(data)
         var category = {
-            suggestionname:req.body.suggestionname,
+            suggestionname:req.body.suggestionname, 
             suggestionimage:data
         }
         var post = new Suggestion(category);

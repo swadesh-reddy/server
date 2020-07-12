@@ -1,10 +1,9 @@
-var Post = require('../model/post');
+var Post = require('../model/newsfeed');
 var upload = require('../_helpers/multer');
 var mybucket = require('../_helpers/gcs')
 var path = require('path');
 var fs = require('fs')
-
-
+var Category = require('../model/category')
 exports.addPost = async (req)=>{
     // upload.single('categoryimage');
     const file = path.join(__dirname, '../images/'+req.file.originalname)
@@ -14,22 +13,32 @@ const myFile = fs.readFileSync(file)
         originalname: req.file.originalname,
         buffer: myFile
       }
-  return await mybucket.uploadFile(fileMetaData).then((data)=>{
-        console.log(data)
+  return await mybucket.uploadFile(fileMetaData).then( async (data)=>{
+    console.log(req.file.path)
         var post = {
             postname:req.body.postname,
             postimage:data,
+            postfilename:req.file.originalname,
             posturl:req.body.posturl,
             postauthor:req.body.postauthor,
             postdescription:req.body.postdescription,
-            postcategory:req.body.postcategory,
-            postsuggestion:req.body.postsuggestion
         }
+
         var newpost = new Post(post);
-         newpost.save();
-    }).catch((err)=>{console.log(err);  })
-  
-   
+        var res =  await newpost.save();
+       var categories = JSON.parse(req.body.postcategories);
+         for(var category in categories){
+          var newcategory =  await Category.findById({_id:categories[category]})
+            if(newcategory < 1){return};
+    
+        console.log(newcategory)
+        newcategory.posts.push({postid:res._id});
+        await newcategory.save();
+        };
+        
+      
+     }).catch((err)=>{console.log(err);  })
+
 }
 
 exports.getAllPosts = async (req)=>{
@@ -50,10 +59,30 @@ exports.getPostsBySuggestion = async (req)=>{
 
 exports.getPostById = async (req, res)=>{
     var resultcount = await Post.findOne({req})
-     if(!resultcount)return {message: 'Category not found', code: 400 } 
+     if(!resultcount)return {message: 'Category not found', code: 404 } 
      return resultcount;
 }
+exports.searchItem = async (req, res)=>{
+   var posts =  await Post.find({ "postname": { "$regex": req.params.filter, "$options": "i" }});
+   if(posts < 1){return {message: 'news not found', code: 404 } }
+   return posts
+}
 exports.deletePostById = async(req, res)=>{
-    var resultcount = await Post.findByIdAndDelete(req)
+    var categories = await Category.find({});
+            categories.forEach(category => {
+                console.log(category)
+                var posts = category.posts;
+                for(var i in posts){
+                    if(posts[i].postid == req){
+                        console.log(posts[i])
+                        posts.splice(i,1)
+                        console.log(posts[i])
+                    }
+                }
+                category.save();
+            });
+        console.log(req)
+       var resultcount = await Post.findByIdAndDelete(req);
+    
     return resultcount
 }

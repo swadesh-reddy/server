@@ -3,8 +3,9 @@ var mongoose = require('mongoose');
 
 var CategorySchema = new mongoose.Schema({
 
-    categoryid: { type: String, hashKey: true, default: uuid.v4() },
    categoryname:{type:String},
-   categoryimage:{type:String}
+   categoryfilename:{type:String},
+   categoryimage:{type:String},
+   posts:[{postid:{type:mongoose.Schema.Types.ObjectId, ref:'posts'}}]
 })
 module.exports = mongoose.model('categories', CategorySchema);

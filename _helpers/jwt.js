@@ -10,9 +10,12 @@ function jwt() {
             '/users/register',
             '/users/login',
             '/category/getallcategories',
+            '/category/getPostsByCategory',
             '/newsfeed/getpostsbycategoryname',
+            '/newsfeed/searchitem/*',
             '/suggestion/getallsuggestions',
             '/suggestion/getpostsbysuggestionname',
+            '/postcategory/getallPostbyCategory'
         ]
     },function (err, req, res, next) {
         if (err.code === 'invalid_token') return next();

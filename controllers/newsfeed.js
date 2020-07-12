@@ -42,6 +42,16 @@ exports.getPostsBySuggestionName = async (req, res, next)=>{
         });
     });
 }
+exports.searchNews = async (req,res,next)=>{
+    console.log(req.params.filter)
+    await NewsFeedService.searchItem(req,res).then(data=>{
+        res.send(data);
+    }).catch(err => {
+        res.status(500).json({
+            message: err.message || "Some error occurred while retrieving the Blogs."
+        });
+    });
+}
 
 exports.addPost = async (req, res) => {
     // console.log(req.body)
@@ -55,6 +65,7 @@ exports.addPost = async (req, res) => {
         });
     });
 }
+
 exports.deletePostById = async (req,res, next)=>{
     console.log(req.body)
     await NewsFeedService.deletePostById(req.params._id).then((data)=>{

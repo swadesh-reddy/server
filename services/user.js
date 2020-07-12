@@ -65,9 +65,14 @@ module.exports.updateUserpic = async (req,res)=>{
         originalname: req.file.originalname,
         buffer: myFile
       }
-  return await  mybucket.uploadFile(fileMetaData).then((data)=>{
+  return await  mybucket.uploadFile(fileMetaData).then( async (data)=>{
         console.log(decoded.user[0].email)
-        User.updateOne({"email":decoded.user[0].email},{$set:{avatar:data}})
+      //  User.updateOne({"email":decoded.user[0].email},{$set:{avatar:data}})
+      var user = await User.findOne({"email":decoded.user[0].email});
+       if(!user){res.send({message: "something went wrong.", status:500})}
+            user.avatar = data;
+            await user.save();
+            return user
     }).catch((err)=>{console.log(err);  })
      
 }

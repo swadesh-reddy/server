@@ -23,7 +23,7 @@ exports.getProfile = async (req,res,next)=>{
 exports.upDateUserPic = async (req, res, next)=>{
         console.log(req.header('authorization'))
     await userService.updateUserpic(req, res).then(data => {
-        res.send({message:"upload successful", status: 200});
+        res.send(data);
     }).catch(err => {
         res.status(500).json({
             message: "something went wrong.", status:500

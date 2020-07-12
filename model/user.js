@@ -10,6 +10,7 @@ var UserSchema = mongoose.Schema({
     admin: Boolean,
     contact:Number,
     avatar:String,
+    avatfilename:String,
     createddate: { type: Date, default: Date.now },
   // propic: String,  
 })
